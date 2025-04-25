@@ -1,0 +1,40 @@
+# Byte-compiled / cache files
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environment
+venv/
+env/
+ENV/
+
+# Database (optional if using SQLite)
+*.sqlite3
+*.db
+
+# Environment variables
+.env
+
+# VS Code / IDE settings
+.vscode/
+.idea/
+
+# Flask instance folder (optional)
+instance/
+
+# Mac OS specific
+.DS_Store
+
+# Windows specific
+Thumbs.db
+
+# Logs
+*.log
+
+# Pytest cache
+.pytest_cache/
+
+# Packaging
+build/
+dist/
+*.egg-info/

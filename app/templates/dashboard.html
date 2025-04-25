@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Your Blogs</h2>
+{% for blog in blogs %}
+    <div>
+        <h3>{{ blog.title }}</h3>
+        <a href="{{ url_for('blog.edit_blog', id=blog.id) }}">Edit</a> |
+        <a href="{{ url_for('blog.delete_blog', id=blog.id) }}">Delete</a>
+        <hr>
+    </div>
+{% else %}
+    <p>No posts yet.</p>
+{% endfor %}
+{% endblock %}
