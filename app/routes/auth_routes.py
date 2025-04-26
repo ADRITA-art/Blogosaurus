@@ -1,10 +1,13 @@
 from flask import Blueprint, request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, logout_user, login_required, current_user
+from flask_cors import CORS
 from .. import db
 from ..models import User
 
 auth_bp = Blueprint('auth', __name__)
+
+CORS(auth_bp)
 
 @auth_bp.route('/signup', methods=['GET', 'POST'])
 def signup():

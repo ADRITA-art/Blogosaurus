@@ -2,8 +2,11 @@ from flask import Blueprint, request, jsonify
 from flask_login import login_required, current_user
 from .. import db
 from ..models import Blog
+from flask_cors import CORS
+
 
 blog_bp = Blueprint('blog', __name__)
+CORS(blog_bp)
 
 @blog_bp.route('/')
 def index():
