@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, request, jsonify
 from flask_login import login_required, current_user
 from .. import db
 from ..models import Blog
@@ -8,55 +8,129 @@ blog_bp = Blueprint('blog', __name__)
 @blog_bp.route('/')
 def index():
     blogs = Blog.query.all()
-    return render_template('index.html', blogs=blogs)
+    blog_list = []
+    
+    for blog in blogs:
+        blog_data = {
+            "id": blog.id,
+            "title": blog.title,
+            "content": blog.content,
+            "author_id": blog.user_id,
+            "created_at": blog.created_at.strftime('%Y-%m-%d %H:%M:%S') if hasattr(blog, 'created_at') else None
+        }
+        blog_list.append(blog_data)
+    
+    return jsonify({"blogs": blog_list}), 200
 
 
 @blog_bp.route('/dashboard')
 @login_required
 def dashboard():
     blogs = Blog.query.filter_by(user_id=current_user.id).all()
-    return render_template('dashboard.html', blogs=blogs)
+    blog_list = []
+    
+    for blog in blogs:
+        blog_data = {
+            "id": blog.id,
+            "title": blog.title,
+            "content": blog.content,
+            "created_at": blog.created_at.strftime('%Y-%m-%d %H:%M:%S') if hasattr(blog, 'created_at') else None
+        }
+        blog_list.append(blog_data)
+    
+    return jsonify({
+        "user_id": current_user.id,
+        "username": current_user.username,
+        "blogs": blog_list
+    }), 200
 
 
-@blog_bp.route('/create', methods=['GET', 'POST'])
+@blog_bp.route('/create', methods=['POST'])
 @login_required
 def create_blog():
-    if request.method == 'POST':
-        title = request.form['title']
-        content = request.form['content']
-        blog = Blog(title=title, content=content, author=current_user)
-        db.session.add(blog)
-        db.session.commit()
-        return redirect(url_for('blog.dashboard'))
-    return render_template('create_blog.html')
+    data = request.get_json()
+    
+    if not data:
+        return jsonify({"error": "No input data provided"}), 400
+        
+    title = data.get('title')
+    content = data.get('content')
+    
+    if not title or not content:
+        return jsonify({"error": "Title and content are required"}), 400
+    
+    blog = Blog(title=title, content=content, author=current_user)
+    db.session.add(blog)
+    db.session.commit()
+    
+    return jsonify({
+        "message": "Blog created successfully",
+        "blog_id": blog.id,
+        "title": blog.title
+    }), 201
 
 
-@blog_bp.route('/edit/<int:id>', methods=['GET', 'POST'])
+@blog_bp.route('/edit/<int:id>', methods=['GET', 'PUT'])
 @login_required
 def edit_blog(id):
     blog = Blog.query.get_or_404(id)
+    
     if blog.author != current_user:
-        return redirect(url_for('blog.dashboard'))
-    if request.method == 'POST':
-        blog.title = request.form['title']
-        blog.content = request.form['content']
+        return jsonify({"error": "Unauthorized access"}), 403
+    
+    if request.method == 'GET':
+        blog_data = {
+            "id": blog.id,
+            "title": blog.title,
+            "content": blog.content,
+            "created_at": blog.created_at.strftime('%Y-%m-%d %H:%M:%S') if hasattr(blog, 'created_at') else None
+        }
+        return jsonify({"blog": blog_data}), 200
+        
+    elif request.method == 'PUT':
+        data = request.get_json()
+        
+        if not data:
+            return jsonify({"error": "No input data provided"}), 400
+            
+        blog.title = data.get('title', blog.title)
+        blog.content = data.get('content', blog.content)
         db.session.commit()
-        return redirect(url_for('blog.dashboard'))
-    return render_template('edit_blog.html', blog=blog)
+        
+        return jsonify({
+            "message": "Blog updated successfully",
+            "blog_id": blog.id
+        }), 200
 
 
-@blog_bp.route('/delete/<int:id>')
+@blog_bp.route('/delete/<int:id>', methods=['DELETE'])
 @login_required
 def delete_blog(id):
     blog = Blog.query.get_or_404(id)
+    
     if blog.author != current_user:
-        return redirect(url_for('blog.dashboard'))
+        return jsonify({"error": "Unauthorized access"}), 403
+        
     db.session.delete(blog)
     db.session.commit()
-    return redirect(url_for('blog.dashboard'))
+    
+    return jsonify({
+        "message": "Blog deleted successfully"
+    }), 200
 
 
-@blog_bp.route('/blog/<int:id>')
+@blog_bp.route('/blog/<int:id>', methods=['GET'])
 def view_blog(id):
     blog = Blog.query.get_or_404(id)
-    return render_template('view_blog.html', blog=blog)
+    
+    author = blog.author.username if blog.author else "Unknown"
+    
+    blog_data = {
+        "id": blog.id,
+        "title": blog.title,
+        "content": blog.content,
+        "author": author,
+        "created_at": blog.created_at.strftime('%Y-%m-%d %H:%M:%S') if hasattr(blog, 'created_at') else None
+    }
+    
+    return jsonify({"blog": blog_data}), 200
