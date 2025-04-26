@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from flask_login import login_required, current_user
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from .. import db
 from ..models import Blog
 from flask_cors import CORS
@@ -27,9 +27,10 @@ def index():
 
 
 @blog_bp.route('/dashboard')
-@login_required
+@jwt_required()
 def dashboard():
-    blogs = Blog.query.filter_by(user_id=current_user.id).all()
+    user_id = get_jwt_identity()
+    blogs = Blog.query.filter_by(user_id=user_id).all()
     blog_list = []
     
     for blog in blogs:
@@ -42,15 +43,15 @@ def dashboard():
         blog_list.append(blog_data)
     
     return jsonify({
-        "user_id": current_user.id,
-        "username": current_user.username,
+        "user_id": user_id,
         "blogs": blog_list
     }), 200
 
 
 @blog_bp.route('/create', methods=['POST'])
-@login_required
+@jwt_required()
 def create_blog():
+    user_id = get_jwt_identity()
     data = request.get_json()
     
     if not data:
@@ -62,7 +63,7 @@ def create_blog():
     if not title or not content:
         return jsonify({"error": "Title and content are required"}), 400
     
-    blog = Blog(title=title, content=content, author=current_user)
+    blog = Blog(title=title, content=content, user_id=user_id)
     db.session.add(blog)
     db.session.commit()
     
@@ -74,11 +75,12 @@ def create_blog():
 
 
 @blog_bp.route('/edit/<int:id>', methods=['GET', 'PUT'])
-@login_required
+@jwt_required()
 def edit_blog(id):
+    user_id = get_jwt_identity()
     blog = Blog.query.get_or_404(id)
     
-    if blog.author != current_user:
+    if blog.user_id != user_id:
         return jsonify({"error": "Unauthorized access"}), 403
     
     if request.method == 'GET':
@@ -107,11 +109,12 @@ def edit_blog(id):
 
 
 @blog_bp.route('/delete/<int:id>', methods=['DELETE'])
-@login_required
+@jwt_required()
 def delete_blog(id):
+    user_id = get_jwt_identity()
     blog = Blog.query.get_or_404(id)
     
-    if blog.author != current_user:
+    if blog.user_id != user_id:
         return jsonify({"error": "Unauthorized access"}), 403
         
     db.session.delete(blog)

@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from dotenv import load_dotenv
 import os
+from flask_cors import CORS
 
 db = SQLAlchemy()
 login_manager = LoginManager()
@@ -23,6 +24,7 @@ def create_app():
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(blog_bp)
+    CORS(app, supports_credentials=True)
 
     with app.app_context():
         db.create_all()
