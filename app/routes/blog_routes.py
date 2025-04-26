@@ -29,7 +29,11 @@ def index():
 @blog_bp.route('/dashboard')
 @jwt_required()
 def dashboard():
+    # Get user_id from JWT token and convert back to integer if needed
     user_id = get_jwt_identity()
+    if isinstance(user_id, str) and user_id.isdigit():
+        user_id = int(user_id)
+        
     blogs = Blog.query.filter_by(user_id=user_id).all()
     blog_list = []
     

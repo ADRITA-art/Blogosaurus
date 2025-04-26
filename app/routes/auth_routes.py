@@ -1,12 +1,10 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, current_app
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import login_user, logout_user, login_required, current_user
+from flask_login import login_user, logout_user, current_user
 from flask_cors import CORS
-from flask_jwt_extended import create_access_token, jwt_required, JWTManager
-from .. import db, app
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from .. import db
 from ..models import User
-
-jwt = JWTManager(app)
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -54,9 +52,9 @@ def login():
         return jsonify({"error": "Invalid email or password"}), 401
 
     login_user(user)
-
     
-    access_token = create_access_token(identity=user.id)
+    # Create JWT token with the user ID as identity - convert to string
+    access_token = create_access_token(identity=str(user.id))
 
     return jsonify({
         "message": "Login successful",
@@ -67,7 +65,8 @@ def login():
 
 
 @auth_bp.route('/logout')
-@login_required
+@jwt_required()
 def logout():
-    logout_user()
+    # With JWT, client should discard token, server-side we don't need to do anything
+    # but we keep the endpoint for API consistency
     return jsonify({"message": "Logged out successfully"}), 200
