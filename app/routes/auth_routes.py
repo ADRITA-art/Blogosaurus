@@ -1,13 +1,13 @@
-from flask import Blueprint, request, jsonify, current_app
+from flask import Blueprint, request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import login_user, logout_user, current_user
+from flask_login import login_user, logout_user
 from flask_cors import CORS
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from .. import db
 from ..models import User
 
-auth_bp = Blueprint('auth', __name__)
-
+# Create blueprint with an explicit url_prefix
+auth_bp = Blueprint('auth', __name__, url_prefix='')  # Empty string means no prefix
 CORS(auth_bp)
 
 @auth_bp.route('/signup', methods=['GET', 'POST'])

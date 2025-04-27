@@ -1,14 +1,7 @@
 from app import create_app
-from dotenv import load_dotenv
 
-
-load_dotenv()
-
-
+# Create the Flask application instance for WSGI servers
 application = create_app()
 
-
-app = application
-
 if __name__ == "__main__":
-    app.run()
+    application.run()

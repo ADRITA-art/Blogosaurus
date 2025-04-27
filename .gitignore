@@ -1,40 +1,114 @@
-# Byte-compiled / cache files
+# Python / Flask
 __pycache__/
 *.py[cod]
 *.pyo
+*.so
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+develop-eggs/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.manifest
+*.spec
 
 # Virtual environment
 venv/
 env/
 ENV/
+.env
+.venv
+env.bak/
+venv.bak/
 
-# Database (optional if using SQLite)
+# Database files
 *.sqlite3
 *.db
-
-# Environment variables
-.env
-
-# VS Code / IDE settings
-.vscode/
-.idea/
-
-# Flask instance folder (optional)
-instance/
-
-# Mac OS specific
-.DS_Store
-
-# Windows specific
-Thumbs.db
+*.rdb
 
 # Logs
 *.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# Pytest cache
+# IDE specific files
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.project
+.pydevproject
+
+# OS specific files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Environment variables and secrets
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+*.pem
+
+# Coverage reports
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
 .pytest_cache/
 
-# Packaging
-build/
-dist/
-*.egg-info/
+# Deployment specific
+.elasticbeanstalk/
+.ebextensions/
+.ebignore
+.flaskenv
+.vercel
+.netlify
+node_modules/
+
+# Local development
+instance/
+.webassets-cache
+.sass-cache/
+
+# Docker
+.dockerignore
+Dockerfile
+docker-compose*.yml
+*.dockerfile
+
+# Temporary files
+tmp/
+temp/
+.tmp/
+*.tmp
+*.bak
+*.swp
+*~
