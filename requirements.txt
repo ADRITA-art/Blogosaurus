@@ -6,3 +6,7 @@ Flask-CORS==4.0.0
 Werkzeug==2.3.7
 python-dotenv==1.0.0
 SQLAlchemy==2.0.22
+# Production dependencies
+gunicorn==21.2.0
+# For Windows users, if using waitress instead of gunicorn
+# waitress==2.1.2
