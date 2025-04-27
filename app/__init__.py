@@ -58,6 +58,9 @@ def create_app(config=None):
             db.session.execute(text('SELECT 1'))
             db.session.commit()
             print('Database connection successful!')
+
+            db.create_all()
+            print('Tables created!')
         except Exception as e:
             print(f"Database connection error: {e}")
     
