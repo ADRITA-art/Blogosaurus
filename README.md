@@ -53,7 +53,7 @@ blogosaurus/
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/your-username/blogosaurus.git
+   git clone https://github.com/ADRITA-art/blogosaurus.git
    cd blogosaurus
    ```
 
